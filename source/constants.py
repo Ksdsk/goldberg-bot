@@ -14,3 +14,15 @@ SCHOOL_ID_TRANSLATOR = {
 
 SUBJECT_ID_REVERSE_TRANSLATOR = {v: k for k, v in SUBJECT_ID_TRANSLATOR.items()}
 SCHOOL_ID_REVERSE_TRANSLATOR = {v: k for k, v in SCHOOL_ID_TRANSLATOR.items()}
+
+DALHOUSIE_SUBJECT_LISTS = [
+    "ASSC",
+    "BIOL",
+    "CSCI",
+    "ECON",
+    "ENGL",
+    "MATH",
+    "MGMT",
+    "PSYO",
+    "STAT"
+]
