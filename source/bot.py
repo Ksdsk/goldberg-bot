@@ -4,13 +4,22 @@ import discord
 import random
 import os
 from dotenv import load_dotenv
+from constants import ALLOWLISTED_SERVER_IDS
 
 bot = discord.Bot()
 
+# Import cogs
+cogs_list = [
+    "simple_utility"
+]
+for cog in cogs_list:
+    bot.load_extension(f"cogs.{cog}")
+
+# Global commands
 @bot.command(
     name="ping",
     description="Sends the bot's latency",
-    guild_ids=[759881688506957844]
+    guild_ids=ALLOWLISTED_SERVER_IDS
 )
 async def ping(ctx):
     latency = "{:.2f}".format(bot.latency*1000)
