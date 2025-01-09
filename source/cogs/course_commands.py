@@ -70,22 +70,23 @@ class Course_Commands(commands.Cog):
             embed=discord.Embed(title=f"{subject.upper()} {course_code}", url=f"{course_schoolurl}", description=f"{course_name}", color=0xfbf182)
             embed.add_field(name="Subject", value=f"{subquery_cursor.fetchone()[0]}", inline=True)
             embed.add_field(name="School", value=f"{SCHOOL_ID_REVERSE_TRANSLATOR.get(school_id)}", inline=True)
-            embed.add_field(name="Description", value=f"{course_description}", inline=False)
+            embed.add_field(name="Description", value=f"{cut_limit(clean_html_frags(course_description))}", inline=False)
             embed.add_field(name="Latest Syllabus Link", value=f"Currently being built! Until then, please check the pins in #{subject.lower()}{code} channel to grab the latest available syllabus.", inline=False)
-            embed.set_footer(text="Made by @soondae 🦆🦆🦆")
+            embed.set_footer(text="Made by @soondae 🦆🦆🦆 but not for @Brando")
             
             subquery_cursor.close()
             cursor.close()
             cnx.close()
             
             await ctx.respond(embed=embed)
-        except:
+        except Exception as e:
             if cursor:
                 cursor.close()
 
             if cnx:
                 cnx.close()
 
+            print(e)
             await ctx.respond("**Error**: Internal Service Exception. Please try again later or reach out to @soondae!", ephemeral=True)
 
 
@@ -94,4 +95,9 @@ def setup(bot):
 
 def clean_html_frags(s: str):
     return s.replace("&amp;", "&")
+
+def cut_limit(s: str):
+    if len(s) > 1024:
+        s = s[0:1020] + "..."
+    return s
     

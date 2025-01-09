@@ -10,7 +10,9 @@ SUBJECT_ID_TRANSLATOR = {
     "STAT": "f49f0a99-2481-4a1d-95ad-095bd7d6e72c",
     "BUSS": "2dfdb588-0589-45d1-8dbb-0b5bc3b8e523",
     "ECON": "078792e2-b807-45f1-b923-35608d8f6df5",
-    "MGMT": "f5f6e5ff-cd3e-48a1-81f7-e4fc11460672"
+    "MGMT": "f5f6e5ff-cd3e-48a1-81f7-e4fc11460672",
+    "ASSC": "e877fae1-e7c8-49a1-bc14-cd35314444f7",
+    "ENGL": "8dc800dd-7b81-43b7-90b9-f25cfa838cc7"
 }
 
 SCHOOL_ID_TRANSLATOR = {
