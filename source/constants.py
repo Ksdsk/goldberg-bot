@@ -3,6 +3,7 @@ ALLOWLISTED_SERVER_IDS = [
     664571288463081481
 ]
 
+# mySQL Related Data
 SUBJECT_ID_TRANSLATOR = {
     "CSCI": "a38d54eb-559d-4d6a-9a28-edfc1a4e67d5",
     "PSYO": "15f332e2-1f8a-428d-ab4e-41d06e9435fe",
@@ -34,3 +35,6 @@ DALHOUSIE_SUBJECT_LISTS = [
     "PSYO",
     "STAT"
 ]
+
+# DalSearch
+DALSEARCH_COURSE_API_ENDPOINT_FORMAT = "https://www.dalsearch.com/api/course/%s"

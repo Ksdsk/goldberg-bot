@@ -7,5 +7,6 @@ To install dependencies, run:
 pip install -r requirements.txt
 ```
 
-## Contributing
-Todo
+## Acknowledgements and Praises
+
+This repository uses [DalSearch](https://github.com/theobourgeois/DalSearch) as a critical API dependency. The creators of that repository are absolute innovators.

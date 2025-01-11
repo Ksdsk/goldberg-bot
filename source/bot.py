@@ -1,5 +1,3 @@
-# This example requires the 'members' and 'message_content' privileged intents to function.
-
 import discord
 import os
 from dotenv import load_dotenv
@@ -9,7 +7,7 @@ bot = discord.Bot()
 
 # Import cogs
 cogs_list = [
-    "simple_utility",
+    # "simple_utility",
     "course_commands"
 ]
 for cog in cogs_list:
