@@ -4,6 +4,7 @@ from discord.ext import commands
 import os
 import math
 import boto3
+import asyncio
 
 from constants import ALLOWLISTED_SERVER_IDS
 from constants import SUBJECT_ID_TRANSLATOR
@@ -28,7 +29,6 @@ class Course_Commands(commands.Cog):
     async def get_subjects(ctx):
         return [subject for subject in DALHOUSIE_SUBJECT_LISTS if subject.startswith(ctx.value.upper())]
 
-
     @course.command(
         name="syllabus",
         description="Gets the syllabus of the course"
@@ -45,6 +45,8 @@ class Course_Commands(commands.Cog):
         if not does_course_exist(subject, code):
             await ctx.respond("**Error**: This course does not exist, or has not been added yet to the database. Please try again later or reach out to @soondae!", ephemeral=True)
             return
+        
+        await ctx.defer(ephemeral=True)
 
         matching_syllabus = get_all_matching_syllabus(subject.upper(), code)
 

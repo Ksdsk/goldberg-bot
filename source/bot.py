@@ -7,7 +7,7 @@ bot = discord.Bot()
 
 # Import cogs
 cogs_list = [
-    # "simple_utility",
+    "simple_utility",
     "course_commands"
 ]
 for cog in cogs_list:
