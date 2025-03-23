@@ -5,6 +5,7 @@ import os
 import math
 import boto3
 import asyncio
+import re
 
 from constants import ALLOWLISTED_SERVER_IDS
 from constants import SUBJECT_ID_TRANSLATOR
@@ -46,7 +47,7 @@ class Course_Commands(commands.Cog):
             await ctx.respond("**Error**: This course does not exist, or has not been added yet to the database. Please try again later or reach out to @soondae!", ephemeral=True)
             return
         
-        await ctx.defer(ephemeral=True)
+        await ctx.defer(ephemeral=False)
 
         matching_syllabus = get_all_matching_syllabus(subject.upper(), code)
 
@@ -56,10 +57,14 @@ class Course_Commands(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
-        embed=discord.Embed(title=f"Syllabus for {subject.upper()} {code}", description=f"Found {len(matching_syllabus)} matches. Link expires in {int(self.DEFAULT_EXPIRATION / 60)} minutes!")
+        embed=discord.Embed(title=f"Syllabus for {subject.upper()} {code}", description=f"Showing the first {min(len(matching_syllabus), 10)} matches. Link expires in {int(self.DEFAULT_EXPIRATION / 60)} minutes!")
         
+        ct = 1
         for syllabus in matching_syllabus:
-            embed.add_field(name=f"{extract_term_and_convert_to_readable(syllabus)} w/ {', '.join(extract_instructor_names(syllabus))}", 
+            if ct == 10:
+                break
+            ct += 1
+            embed.add_field(name=f"{syllabus}", 
                             value=f"[Download Link]({get_presigned_url_for_getobject(syllabus, self.DEFAULT_EXPIRATION)})", 
                             inline=False)
 
@@ -123,7 +128,9 @@ class Course_Commands(commands.Cog):
                 embed.add_field(name="Latest Syllabus Link", value=f"No syllabus was found for this course!", inline=False)
             else:
                 latest_syllabus = matching_syllabus[0]
-                embed.add_field(name="Latest Syllabus Link", value=f"[{extract_term_and_convert_to_readable(latest_syllabus)} w/ {', '.join(extract_instructor_names(latest_syllabus))}]({get_presigned_url_for_getobject(latest_syllabus, self.DEFAULT_EXPIRATION)}) (expires in {int(self.DEFAULT_EXPIRATION / 60)} minutes)", inline=False)
+                embed.add_field(name="Latest Syllabus Link", value=f"[{latest_syllabus}]({get_presigned_url_for_getobject(latest_syllabus, self.DEFAULT_EXPIRATION)})", inline=False)
+                embed.add_field(name="", value=f"Use `/course syllabus {subject.upper()} {code}` to get more syllabus for this course!", inline=False)
+
             embed.set_footer(text="Made by @soondae 🦆🦆🦆")
             
             subquery_cursor.close()
@@ -178,36 +185,42 @@ def get_s3_client():
     return boto3.client(
         "s3",
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        config=boto3.session.Config(signature_version='s3v4')
     )
 
 def get_s3_bucket_name():
     return os.getenv("AWS_S3_BUCKET_NAME")
 
 def sort_syllabus_name_reverse_chronologically(arr: list):
-    arr.sort(key=lambda x: x[11:13], reverse=True)
-
-def extract_instructor_names(filename: str):
-    instructor_names = []
-    extract = filename.removesuffix(".pdf").split("_")[3:]
-
-    for i in range(0,len(extract),2):
-        instructor_names.append(f"{extract[i]} {extract[i+1]}")
-
-    return instructor_names
+  # Define valid seasons and year range
+    valid_seasons = ['Fall', 'Winter', 'Summer']
+    valid_year_range = range(2000, 2100)
     
-def extract_term_and_convert_to_readable(filename: str):
-    term = filename[10:11]
-    year = filename[11:13]
-    if term == "F":
-        return f"Fall 20{year}"
-    elif term == "S":
-        return f"Summer 20{year}"
-    elif term == "W":
-        return f"Winter 20{year}"
-    else:
-        return "Unknown"
+    # Regular expression to match the year (2000-2099) and season
+    year_season_pattern = re.compile(r'(\b(?:20\d{2})\b)\s*(Fall|Winter|Summer)')
     
+    # Filter the list based on the year and season
+    filtered_items = []
+    for item in arr:
+        match = year_season_pattern.search(item)
+        if match:
+            year, season = int(match.group(1)), match.group(2)
+            if year in valid_year_range and season in valid_seasons:
+                # Store the item along with the extracted year and season
+                filtered_items.append((item, year, season))
+    
+    # Sort the filtered list by year and season
+    sorted_items = sorted(filtered_items, key=lambda x: (x[1], ['Fall', 'Winter', 'Summer'].index(x[2])))
+    
+    # Get back the original items, after sorting by year and season
+    sorted_items = [item[0] for item in sorted_items]
+
+    # Reverse the sorted list
+    sorted_items.reverse()
+    
+    return sorted_items
+
 def does_course_exist(subject: str, code: int):
     cnx = get_db_connection()
     cursor = cnx.cursor()
@@ -228,11 +241,15 @@ def get_all_matching_syllabus(subject: str, code: int):
     s3_client = get_s3_client()
     matching_syllabus = []
 
-    for item in s3_client.list_objects_v2(Bucket=get_s3_bucket_name())["Contents"]:
-        if item["Key"].startswith(f"{subject.upper()}_{code}"):
-            matching_syllabus.append(item["Key"])
+    all_items = s3_client.list_objects_v2(Bucket=get_s3_bucket_name(), Prefix=f"{subject.upper()} {code}")
 
-    sort_syllabus_name_reverse_chronologically(matching_syllabus)
+    if "Contents" not in all_items:
+        return matching_syllabus
+    
+    for item in all_items["Contents"]:
+        matching_syllabus.append(item["Key"])
+    
+    matching_syllabus = sort_syllabus_name_reverse_chronologically(matching_syllabus)
 
     return matching_syllabus
 

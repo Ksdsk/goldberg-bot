@@ -16,7 +16,7 @@ class Simple_Utility(commands.Cog):
             list_of_babes.append(random.randint(0, 100))
 
         ultimate = random.randint(0, 100)
-        superior = random.randint(0, 100)
+        superior = random.randint(0, 3)
 
         number = list_of_babes[random.randint(0,multiplier-1)]
         highest = max(list_of_babes)
@@ -30,7 +30,7 @@ class Simple_Utility(commands.Cog):
         else:
             babe_color = 0xe880e0
 
-        if highest == ultimate and highest == superior and highest == 100:
+        if highest == ultimate and 3 == superior and highest == 100:
             embed=discord.Embed(title=f"@{ctx.author.name}, you are the TRANSCENDENT POOKIE 🤩!", color=0xffdd00)
         elif highest == ultimate and highest == 100:
             embed=discord.Embed(title=f"@{ctx.author.name}, you are the ULTIMATE BABE 😍!", color=0xff5357)
@@ -46,15 +46,6 @@ class Simple_Utility(commands.Cog):
     )
     async def babe(self, ctx):
         embed = self.babe_rng(1, ctx)
-        await ctx.respond(embed=embed)
-
-    @commands.slash_command(
-        name="massbabe",
-        description="Measures your babeness x 10",
-        guild_ids=ALLOWLISTED_SERVER_IDS
-    )
-    async def massbabe(self, ctx):
-        embed = self.babe_rng(10, ctx)
         await ctx.respond(embed=embed)
 
 def setup(bot):
