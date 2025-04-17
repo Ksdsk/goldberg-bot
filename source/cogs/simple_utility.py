@@ -9,7 +9,7 @@ class Simple_Utility(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.lucky_time = 0
-        self.rizz = 0
+        self.rizz = 30
 
     def babe_rng(self, multiplier: int, ctx):
 
@@ -38,17 +38,18 @@ class Simple_Utility(commands.Cog):
         elif self.rizz < 0:
             self.rizz = 0
 
-        ultimate = random.randint(self.rizz, 100)
-        superior = random.randint(0, 3)
-
-        if ultimate == 100 and superior == 3 and highest == 100:
-            embed=discord.Embed(title=f"@{ctx.author.name}, you are the TRANSCENDENT POOKIE 🤩!", color=0xffdd00)
-        elif ultimate == 100 and highest == 100:
-            embed=discord.Embed(title=f"@{ctx.author.name}, you are the ULTIMATE BABE 😍!", color=0xff5357)
-        else:
-            embed=discord.Embed(title=f"@{ctx.author.name}, you are {number}% babe!", color=babe_color)
+        print(f"Current rizz: {self.rizz}")
         
-        embed.add_field(name="Current rizz", value=f"{self.rizz}%", inline=True)
+        if highest == 100:
+            embed=discord.Embed(title=f"@{ctx.author.name}, you are {number}% babe!", color=babe_color)
+            ultimate = random.randint(self.rizz, 100)
+            if ultimate == 100:
+                embed=discord.Embed(title=f"@{ctx.author.name}, you are the ULTIMATE BABE 😍!", color=0xff5357)
+                superior = random.randint(0, 3)
+                if superior == 3:
+                    embed=discord.Embed(title=f"@{ctx.author.name}, you are the POOKIE 🤩!", color=0xffdd00)
+        
+        embed.add_field(name=f"Current rizz: {self.rizz}%", value=f"{self.rizz}%", inline=True)
         return embed
 
     @commands.slash_command(
