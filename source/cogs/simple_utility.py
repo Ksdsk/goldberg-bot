@@ -2,12 +2,14 @@ import discord
 from discord.ext import commands
 from constants import ALLOWLISTED_SERVER_IDS
 import random
-
+import time
 
 class Simple_Utility(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.lucky_time = 0
+        self.rizz = 0
 
     def babe_rng(self, multiplier: int, ctx):
 
@@ -15,28 +17,38 @@ class Simple_Utility(commands.Cog):
         for _ in range(multiplier):
             list_of_babes.append(random.randint(0, 100))
 
-        ultimate = random.randint(0, 100)
-        superior = random.randint(0, 3)
-
         number = list_of_babes[random.randint(0,multiplier-1)]
         highest = max(list_of_babes)
 
         if number < 25:
             babe_color = 0x000000
+            self.rizz -= 2
         elif number < 50:
             babe_color = 0xe9f275
+            self.rizz -= 1
         elif number < 75:
             babe_color = 0x6afd9d
+            self.rizz += 1
         else:
             babe_color = 0xe880e0
+            self.rizz += 2
 
-        if highest == ultimate and 3 == superior and highest == 100:
+        if self.rizz > 100:
+            self.rizz = 100
+        elif self.rizz < 0:
+            self.rizz = 0
+
+        ultimate = random.randint(self.rizz, 100)
+        superior = random.randint(0, 3)
+
+        if ultimate == 100 and superior == 3 and highest == 100:
             embed=discord.Embed(title=f"@{ctx.author.name}, you are the TRANSCENDENT POOKIE 🤩!", color=0xffdd00)
-        elif highest == ultimate and highest == 100:
+        elif ultimate == 100 and highest == 100:
             embed=discord.Embed(title=f"@{ctx.author.name}, you are the ULTIMATE BABE 😍!", color=0xff5357)
         else:
             embed=discord.Embed(title=f"@{ctx.author.name}, you are {number}% babe!", color=babe_color)
         
+        embed.add_field(name="Current rizz", value=f"{self.rizz}%", inline=True)
         return embed
 
     @commands.slash_command(
