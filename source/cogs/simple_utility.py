@@ -40,8 +40,8 @@ class Simple_Utility(commands.Cog):
 
         print(f"Current rizz: {self.rizz}")
         
+        embed=discord.Embed(title=f"@{ctx.author.name}, you are {number}% babe!", color=babe_color)
         if highest == 100:
-            embed=discord.Embed(title=f"@{ctx.author.name}, you are {number}% babe!", color=babe_color)
             ultimate = random.randint(self.rizz, 100)
             if ultimate == 100:
                 embed=discord.Embed(title=f"@{ctx.author.name}, you are the ULTIMATE BABE 😍!", color=0xff5357)
@@ -49,7 +49,7 @@ class Simple_Utility(commands.Cog):
                 if superior == 3:
                     embed=discord.Embed(title=f"@{ctx.author.name}, you are the POOKIE 🤩!", color=0xffdd00)
         
-        embed.add_field(name=f"Current rizz: {self.rizz}%", value=f"{self.rizz}%", inline=True)
+        embed.add_field(name=f"Current rizz: {self.rizz}%", value="", inline=True)
         return embed
 
     @commands.slash_command(
